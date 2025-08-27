@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.ExceptionReadingListPage"
+             xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewmodel:ReadingViewModel"
+             Title="Abnormal Readings"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,*"
+          Padding="10"
+          RowSpacing="10"
+          ColumnSpacing="0">
+
+        <!-- Activity Indicator (Optional Top Indicator) -->
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Color="DarkRed"
+                           Grid.Row="0" />
+
+        <RefreshView Grid.Row="1"
+                     IsEnabled="True"
+                     Command="{Binding GoToExceptionListCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView ItemsSource="{Binding exceptionReadings}"
+                            SelectionMode="None">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Reading">
+                        <Frame BackgroundColor="GhostWhite"
+                               CornerRadius="10"
+                               Margin="5"
+                               Padding="10"
+                               HasShadow="True"
+                               HeightRequest="140">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ReadingViewModel}}, Path=GoToCustomerDetailsCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="1.2*,2*,2*"
+                                  ColumnSpacing="10"
+                                  VerticalOptions="Center"
+                                  HorizontalOptions="FillAndExpand">
+
+                                <!-- Column 0: Usage % -->
+                                <VerticalStackLayout Grid.Column="0"
+                                                     VerticalOptions="Center"
+                                                     HorizontalOptions="Center">
+                                    <Label Text="Usage"
+                                           FontSize="12"
+                                           TextColor="Gray"
+                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding PercentageChange}"
+                                           FontSize="28"
+                                           FontAttributes="Bold"
+                                           TextColor="Red"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+
+                                <!-- Column 1: Customer Info -->
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="2"
+                                                     VerticalOptions="Center"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="Customer"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                    <Label Text="{Binding ERF_NUMBER}"
+                                           FontSize="13"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding CUSTOMER_NAME}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding METER_NUMBER}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="CornflowerBlue" />
+                                </VerticalStackLayout>
+
+                                <!-- Column 2: Meter Reader Info -->
+                                <VerticalStackLayout Grid.Column="2"
+                                                     Spacing="2"
+                                                     VerticalOptions="Center"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="Taken by"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                    <Label Text="{Binding METER_READER, StringFormat='{0}'}"
+                                           FontSize="14"
+                                           TextColor="Red" />
+                                    <Label Text="{Binding ReadingDate, StringFormat='{0:MMM dd, yyyy}'}"
+                                           FontSize="13"
+                                           TextColor="Red" />
+                                    <Label Text="{Binding AREA}"
+                                           FontSize="13"
+                                           FontAttributes="Italic"
+                                           TextColor="Black" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- EmptyView -->
+                <CollectionView.EmptyView>
+                    <StackLayout Orientation="Vertical"
+                                 HorizontalOptions="CenterAndExpand"
+                                 VerticalOptions="CenterAndExpand"
+                                 Padding="20">
+                        <Image Source="nodata_icon.png"
+                               WidthRequest="60"
+                               HeightRequest="60"
+                               HorizontalOptions="Center" />
+                        <Label Text="No Data Found, Restart the App"
+                               FontSize="14"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"
+                               Margin="0,10" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

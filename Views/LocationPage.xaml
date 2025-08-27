@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SampleMauiMvvmApp.Views.LocationPage"
+    xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+    x:DataType="viewmodel:ReadingViewModel"
+    Title="My Locations"
+    BackgroundColor="WhiteSmoke">
+
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0">
+
+        <!-- Refresh View with List -->
+        <RefreshView Grid.Row="0"
+                     Command="{Binding GetLocationsCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding AllLocation}" SelectionMode="None">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:LocationReadings">
+                        <Frame CornerRadius="12" Padding="10" Margin="10"
+                               BackgroundColor="White"
+                               HasShadow="True">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ReadingViewModel}}, Path=GoToListOfUncapturedReadingsByAreaCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                                <!-- Icon -->
+                                <Image Source="uncaptured_location.png"
+                                       WidthRequest="60"
+                                       HeightRequest="60"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
+
+                                <!-- Area Info -->
+                                <VerticalStackLayout Grid.Column="1" Padding="10,0" VerticalOptions="Center">
+                                    <Label Text="{Binding AREANAME}"
+                                           FontAttributes="Bold"
+                                           FontSize="18"
+                                           TextColor="Black"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="Uncaptured Readings"
+                                           FontSize="14"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+
+                                <!-- Count -->
+                                <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="{Binding NumberOfReadings}"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="DarkRed"
+                                           HorizontalTextAlignment="End" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Empty View -->
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="60" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image Source="uncapturedlocation_logo.png"
+                               WidthRequest="150"
+                               HeightRequest="150"
+                               HorizontalOptions="Center" />
+                        <Label Text="No locations available"
+                               FontSize="16"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"
+                               Margin="0,20,0,0" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Loading Spinner -->
+        <ActivityIndicator
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="DarkBlue"
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SampleMauiMvvmApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SampleMauiMvvmApp.Views"
+    xmlns:view="clr-namespace:SampleMauiMvvmApp.Views"
+    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+    Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutBackground="Transparent">
+
+    <!-- Gradient Background -->
+    <Shell.FlyoutBackground>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="White" Offset="0.0" />
+            <GradientStop Color="LightBlue" Offset="1.0" />
+        </LinearGradientBrush>
+    </Shell.FlyoutBackground>
+
+    <!-- Hidden loading page -->
+    <ShellContent
+        ContentTemplate="{DataTemplate local:LoadingPage}"
+        Route="MenuPage"
+        FlyoutItemIsVisible="False" />
+
+    <!-- Main Flyout Pages -->
+    <FlyoutItem Route="MonthCustomerTabPage" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent Title="Not Captured" Icon="water_tap_thick.png" ContentTemplate="{DataTemplate view:UncapturedReadingsPage}" />
+        <ShellContent Title="Captured" Icon="data_entry_icon.jpg" ContentTemplate="{DataTemplate view:CapturedReadingsPage}" />
+        <ShellContent Title="Sync" Icon="cloud_sync_icon.png" ContentTemplate="{DataTemplate view:MonthPage}" />
+        <ShellContent Title="Locations" Icon="uncapturedlocation_logo.png" ContentTemplate="{DataTemplate view:LocationPage}" />
+    </FlyoutItem>
+
+    <!-- Secondary Menu -->
+    <FlyoutItem Route="AddNewFlyoutItem" Title="App Menu Options" Icon="menu_options_icon.png">
+        <ShellContent ContentTemplate="{DataTemplate view:MenuPage}" />
+    </FlyoutItem>
+
+    <!-- Flyout Header -->
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="250">
+            <Image Source="loading_wallpaper.jpg"
+                   Aspect="AspectFill"
+                   Opacity="0.9"
+                   VerticalOptions="FillAndExpand"
+                   HorizontalOptions="FillAndExpand" />
+
+            <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="10" Spacing="10">
+                <Frame BackgroundColor="#CCFFFFFF"
+                       CornerRadius="75"
+                       HeightRequest="150"
+                       WidthRequest="150"
+                       Padding="0"
+                       HasShadow="True"
+                       HorizontalOptions="Center">
+                    <Image Source="user_profile.png"
+                           Aspect="AspectFill"
+                           HeightRequest="150"
+                           WidthRequest="150"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+                </Frame>
+
+                <Label x:Name="lblUsername"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Navy"
+                       HorizontalOptions="Center"
+                       LineBreakMode="TailTruncation" />
+
+                <Label x:Name="lblUserSite"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="DimGrey"
+                       HorizontalOptions="Center"
+                       LineBreakMode="TailTruncation" />
+            </StackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Flyout Footer -->
+    <Shell.FlyoutFooter>
+        <StackLayout Padding="10" BackgroundColor="#F0F8FF" HorizontalOptions="FillAndExpand">
+            <Label Text="Meter Reader App  |  Kinetic Wizard"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   TextColor="DarkSlateGray"
+                   FontSize="14"
+                   FontAttributes="None" />
+        </StackLayout>
+    </Shell.FlyoutFooter>
+</Shell>

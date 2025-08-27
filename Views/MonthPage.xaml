@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+    x:Class="SampleMauiMvvmApp.Views.MonthPage"
+    x:DataType="viewmodel:MonthViewModel"
+    BackgroundColor="LightGray">
+
+    <Grid Padding="10"
+          RowDefinitions="*,Auto"
+          ColumnDefinitions="*"
+          RowSpacing="10"
+          ColumnSpacing="0">
+
+        <!-- Pull to Refresh with List -->
+        <RefreshView Grid.Row="0"
+                     Command="{Binding GetMonthsCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding Months}"
+                            SelectionMode="None"
+                            Margin="0,0,0,10">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Month">
+                        <Frame CornerRadius="12"
+                               BackgroundColor="White"
+                               HasShadow="True"
+                               Padding="0"
+                               Margin="0,5">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MonthViewModel}}, Path=GoToListOfReadingsByMonthCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  Padding="10">
+
+                                <!-- Month Icon -->
+                                <Image Source="month_icon.png"
+                                       HeightRequest="80"
+                                       WidthRequest="80"
+                                       Aspect="AspectFill"
+                                       Grid.Column="0"
+                                       VerticalOptions="Center"
+                                       Margin="0,0,10,0" />
+
+                                <!-- Month Name & Year -->
+                                <VerticalStackLayout Grid.Column="1"
+                                                     VerticalOptions="Center"
+                                                     Spacing="2">
+                                    <Label Text="{Binding MonthName}"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="Black" />
+                                    <!--<Label Text="{Binding Year}"
+                                           FontSize="14"
+                                           TextColor="Gray" />-->
+                                </VerticalStackLayout>
+
+                                <!-- Active Animation -->
+                                <VerticalStackLayout Grid.Column="2"
+                                                     VerticalOptions="Center"
+                                                     IsVisible="{Binding IsActive}">
+                                    <skia:SKLottieView Source="active_animation.json"
+                                                       RepeatCount="-1"
+                                                       HeightRequest="60"
+                                                       WidthRequest="60" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Activity Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{DynamicResource Primary}" />
+    </Grid>
+</ContentPage>

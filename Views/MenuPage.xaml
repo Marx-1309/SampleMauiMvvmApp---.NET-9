@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.MenuPage"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             Title="Menu"
+             BackgroundColor="Transparent"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+
+        <!-- Zoomed-in Fullscreen Background Image -->
+        <Image Source="loading_wallpaper.jpg"
+               Aspect="AspectFill"
+               Scale="1.5"
+               Grid.RowSpan="3"
+               HorizontalOptions="FillAndExpand"
+               VerticalOptions="FillAndExpand" />
+
+        <!-- Menu CollectionView -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Menus}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10"
+                           Margin="10"
+                           BackgroundColor="White"
+                           CornerRadius="10"
+                           HasShadow="True">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MenuViewModel}}, Path=GoToDetailsCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Image WidthRequest="100"
+                                   HeightRequest="100"
+                                   Aspect="AspectFill"
+                                   Source="{Binding Image}" />
+                            <Label Text="{Binding Name}"
+                                   FontFamily="Anton-Regular.tff"
+                                   FontAttributes="Bold"
+                                   FontSize="16"
+                                   HorizontalOptions="Center"
+                                   TextColor="Black" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Logout Button -->
+        <VerticalStackLayout Grid.Row="2" Spacing="10" Padding="0" Margin="10,0,10,10">
+            <Button Text="Logout"
+                    FontAttributes="Bold"
+                    BackgroundColor="IndianRed"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Command="{Binding ConfirmLogoutCommand}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
