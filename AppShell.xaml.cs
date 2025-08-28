@@ -27,6 +27,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ExceptionReadingListPage), typeof(ExceptionReadingListPage));
         Routing.RegisterRoute(nameof(MenuPage), typeof(MenuPage));
         Routing.RegisterRoute(nameof(AppShell), typeof(AppShell));
+        Routing.RegisterRoute(nameof(CustomerMapPage), typeof(CustomerMapPage));
     }
 
     protected override void OnAppearing()

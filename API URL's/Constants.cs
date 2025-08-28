@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public const string HOST = ListOfUrl.SamsungA35;
+        public const string HOST = ListOfUrl.WindhoekHome;
 
         //Month
         public const string GetMonth = HOST + "/api/Month";
@@ -88,7 +88,7 @@
         public const string DebugApi = "http://192.168.178.41:81";
         public const string OmusatiRC = "http://192.168.178.128:86";
         public const string Localhost = "https://localhost:7231";
-        public const string WindhoekHome = "http://192.168.188.152:81";
+        public const string WindhoekHome = "http://192.168.188.152:85";
         public const string OkahaoTcTest = "http://192.168.1.51:81";
         public const string OpuwoTC = "http://192.168.178.15:81";
     }

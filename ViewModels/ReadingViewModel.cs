@@ -107,8 +107,7 @@
                     await Shell.Current.DisplayAlert("Not Found", "No Captured readings found", "OK");
                 }
             }
-            catch (Exception
-            ex)
+            catch (Exception ex)
             {
                 await Shell.Current.DisplayAlert("Unable to retrieve any readings", "Please try again", "OK");
             }

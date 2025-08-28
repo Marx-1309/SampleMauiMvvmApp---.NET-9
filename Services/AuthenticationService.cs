@@ -12,7 +12,7 @@
         //public static string HOST = ListOfUrl.TnWifi;
 
         private HttpClient _httpClient;
-        public static string BaseAddress = DeviceInfo.Platform == DevicePlatform.Android ? Constants.HOST : Constants.HOST;
+        public static string BaseAddress = Constants.HOST;
 
         public AuthenticationService(DbContext dbContext) : base(dbContext)
         {
