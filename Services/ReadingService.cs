@@ -950,6 +950,8 @@ namespace SampleMauiMvvmApp.Services
                                         record.ReadingDate = readingDto.ReadingDate;
                                         record.METER_READER = readingDto.METER_READER ?? "";
                                         record.ERF_NUMBER = readingDto.ERF_NUMBER ?? "";
+                                        record.Latitude = readingDto.Latitude ?? null;
+                                        record.Longitude = readingDto.Longitude ?? null;
 
                                         if (readingDto.CURRENT_READING > 0)
                                         {

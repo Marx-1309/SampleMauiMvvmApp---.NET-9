@@ -48,7 +48,7 @@ namespace SampleMauiMvvmApp.ViewModels
                     Name = "Google  Maps",
                     Image = "map_icon3.jpg",
                     Label= "",
-                    Url = "",
+                    Url = "CustomerMapPage",
                     IsActive=true,
                 }
                 //new Menu{
@@ -96,29 +96,37 @@ namespace SampleMauiMvvmApp.ViewModels
         {
             if (menu == null)
                 return;
-            if (menu.Name == "Integrated Services".ToString())
+            try
             {
-                var response = await AppShell.Current.DisplayActionSheet("Select Option", "cancel", null, "CityTaps", "Others");
-                if (response == "CityTaps")
+                if (menu.Name == "Integrated Services".ToString())
                 {
-                    DisplayToast("This service is not available");
-                    return;
+                    var response = await AppShell.Current.DisplayActionSheet("Select Option", "cancel", null, "CityTaps", "Others");
+                    if (response == "CityTaps")
+                    {
+                        DisplayToast("This service is not available");
+                        return;
 
-                    var loggedInUsername = Preferences.Get("username", true);
-                    var userPassword = await Shell.Current.DisplayPromptAsync("Authentication", "Please enter your password", "cancel", "Connect Now".ToString(), "enter password here...", keyboard: Keyboard.Text);
-                    var dictData = new Dictionary<string, object>();
-                    dictData.Add("integratedService", response);
-                    await AppShell.Current.GoToAsync(nameof(ReflushPage), dictData);
+                        var loggedInUsername = Preferences.Get("username", true);
+                        var userPassword = await Shell.Current.DisplayPromptAsync("Authentication", "Please enter your password", "cancel", "Connect Now".ToString(), "enter password here...", keyboard: Keyboard.Text);
+                        var dictData = new Dictionary<string, object>();
+                        dictData.Add("integratedService", response);
+                        await AppShell.Current.GoToAsync(nameof(ReflushPage), dictData);
+                    }
+                    else DisplayToast("This service is not available");
+                    return;
                 }
-                else DisplayToast("This service is not available");
-                return;
+                //if (menu.Name == "Scan For New Customer(s)")
+                //{
+                //    DisplayToast("This service is not available");
+                //    return;
+                //}
+                await Shell.Current.GoToAsync(menu.Url?.ToString());
             }
-            //if (menu.Name == "Scan For New Customer(s)")
-            //{
-            //    DisplayToast("This service is not available");
-            //    return;
-            //}
-            await Shell.Current.GoToAsync(menu.Url?.ToString());
+            catch (Exception ex)
+            {
+
+            }
+
         }
 
         [RelayCommand]

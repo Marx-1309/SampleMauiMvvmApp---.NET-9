@@ -26,8 +26,8 @@ namespace SampleMauiMvvmApp.Models
         public int? WaterReadingTypeId { get; set; }
         public string? METER_READER { get; set; }
         public string? ReadingDate { get; set; }  /*= DateTime.UtcNow.ToLocalTime();*/
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
         public bool ReadingTaken { get; set; }
         public bool ReadingNotTaken { get; set; }
         public bool? ReadingSync { get; set; }

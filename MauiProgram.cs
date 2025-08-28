@@ -29,6 +29,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ReadingService>();
         builder.Services.AddSingleton<ReadingExportService>();
         builder.Services.AddSingleton<MonthService>();
+        builder.Services.AddSingleton<CustomerMapService>();
         builder.Services.AddSingleton<AuthenticationService>();
         builder.Services.AddTransient<AppShell>();
 
@@ -51,6 +52,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CapturedReadingsPage>();
         builder.Services.AddTransient<LocationPage>();
         builder.Services.AddScoped<UncapturedReadingsByAreaPage>();
+        builder.Services.AddTransient<CustomerMapPage>();
 
         builder.Services.AddSingleton<LoginViewModel>();
         builder.Services.AddSingleton<LoadingViewModel>();
@@ -60,6 +62,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<MonthViewModel>();
         builder.Services.AddScoped<CustomerDetailViewModel>();
         builder.Services.AddSingleton<CustomerViewModel>();
+        builder.Services.AddTransient<CustomerMapViewModel>();
 
         builder.Services.AddAutoMapper(typeof(ClassDtoMapping));
 
