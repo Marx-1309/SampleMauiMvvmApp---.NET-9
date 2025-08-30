@@ -20,9 +20,9 @@ namespace SampleMauiMvvmApp.ViewModels
         }
 
         [RelayCommand]
-        public async Task LoadCustomersAsync()
+        public async Task LoadCustomersAsync(string readingsStatus)
         {
-            var response = await _customerMapService.GetCustomersWithCoordinatesAsync();
+            var response = await _customerMapService.GetCustomersWithCoordinatesAsync(readingsStatus);
             if (response != null)
             {
                 Customers = new ObservableCollection<ReadingDto>(response);

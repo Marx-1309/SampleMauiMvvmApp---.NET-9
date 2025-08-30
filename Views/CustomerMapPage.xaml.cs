@@ -1,4 +1,4 @@
-using Microsoft.Maui.Controls.Maps;
+﻿using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using SampleMauiMvvmApp.ViewModels;
 
@@ -18,7 +18,26 @@ namespace SampleMauiMvvmApp.Views
         {
             base.OnAppearing();
 
-            await _viewModel.LoadCustomersAsync();
+            // Show action sheet for reading status
+            string readingStatus = await Shell.Current.DisplayActionSheet(
+                "Select Reading Status",
+                "Cancel",
+                null,
+                "Captured",
+                "Uncaptured",
+                "All Readings");
+
+            // If user cancels or closes the sheet, default to "All Readings"
+            if (string.IsNullOrWhiteSpace(readingStatus) || readingStatus == "Cancel")
+                readingStatus = "All Readings";
+
+            await LoadPinsAsync(readingStatus);
+        }
+
+        private async Task LoadPinsAsync(string readingStatus)
+        {
+            // Load data into ViewModel
+            await _viewModel.LoadCustomersAsync(readingStatus);
 
             customerMap.Pins.Clear();
 
@@ -31,18 +50,23 @@ namespace SampleMauiMvvmApp.Views
                         Label = $"Cust: {customer.CUSTOMER_NUMBER}",
                         Address = $"Meter: {customer.METER_NUMBER}",
                         Type = PinType.Place,
-                        Location = new Microsoft.Maui.Devices.Sensors.Location((double)customer.Latitude.Value, (double)customer.Longitude.Value)
+                        Location = new Microsoft.Maui.Devices.Sensors.Location(
+                            (double)customer.Latitude.Value,
+                            (double)customer.Longitude.Value)
                     };
+
                     customerMap.Pins.Add(pin);
                 }
             }
 
-            // Center map on first customer
-            var firstCustomer = _viewModel.Customers.FirstOrDefault();
-            if (firstCustomer != null && firstCustomer.Latitude.HasValue && firstCustomer.Longitude.HasValue)
+            // Center map on the first customer with coordinates
+            var firstCustomer = _viewModel.Customers.FirstOrDefault(c => c.Latitude.HasValue && c.Longitude.HasValue);
+            if (firstCustomer != null)
             {
                 customerMap.MoveToRegion(MapSpan.FromCenterAndRadius(
-                    new Microsoft.Maui.Devices.Sensors.Location((double)firstCustomer.Latitude.Value, (double)firstCustomer.Longitude.Value),
+                    new Microsoft.Maui.Devices.Sensors.Location(
+                        (double)firstCustomer.Latitude.Value,
+                        (double)firstCustomer.Longitude.Value),
                     Distance.FromKilometers(1)));
             }
         }

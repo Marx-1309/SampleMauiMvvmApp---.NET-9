@@ -15,27 +15,50 @@ namespace SampleMauiMvvmApp.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<List<ReadingDto>> GetCustomersWithCoordinatesAsync()
+        public async Task<List<ReadingDto>> GetCustomersWithCoordinatesAsync(string readingStatus)
         {
             try
             {
-                var response = await dbContext.Database.Table<Reading>().ToListAsync();
+                List<Reading> response = new();
 
-                if (response.Count > 0)
+                if (readingStatus == "Captured")
                 {
-                    var mappedResult = _mapper.Map<List<ReadingDto>>(response);
-                    return mappedResult;
+                    response = await dbContext.Database.Table<Reading>()
+                        .Where(r => r.ReadingTaken)
+                        .ToListAsync();
+                }
+                else if (readingStatus == "Uncaptured")
+                {
+                    response = await dbContext.Database.Table<Reading>()
+                        .Where(r => !r.ReadingTaken)
+                        .ToListAsync();
+                }
+                else if (readingStatus == "All Readings")
+                {
+                    response = await dbContext.Database.Table<Reading>()
+                        .ToListAsync();
+                }
+                else
+                {
+                    StatusMessage = "Invalid reading status.";
+                    return new List<ReadingDto>();
+                }
+
+                if (response.Any())
+                {
+                    return _mapper.Map<List<ReadingDto>>(response);
                 }
                 else
                 {
                     StatusMessage = "No customers with coordinates found.";
+                    return new List<ReadingDto>();
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Failed to retrieve data. {ex.Message}";
+                return new List<ReadingDto>();
             }
-            return new List<ReadingDto>();
         }
     }
 }

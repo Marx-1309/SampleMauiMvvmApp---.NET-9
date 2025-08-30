@@ -18,7 +18,7 @@
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string? ReadingDate { get; set; }
-
+        public bool ReadingTaken { get; set; }
     }
 
     public class UpdateReadingDto
