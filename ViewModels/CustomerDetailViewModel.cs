@@ -248,7 +248,7 @@
                     {
                         await Shell.Current.DisplayAlert($"Success!", $"A reading for {CurrentMonthReading.CUSTOMER_NAME.Substring(0, 15).Trim() ?? $"customer"} Created!", "OK");
                     }
-
+                    await UpdateCustomerLocationCoordintes();
                     // Propagate the new reading to the main reading page.
                     WeakReferenceMessenger.Default.Send(new ReadingCreateMessage(newReading));
                     await Task.Delay(1000);
@@ -263,7 +263,7 @@
                     await GoBackAsync();
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 return;
             }
@@ -544,5 +544,42 @@
             }
             return "";
         }
+
+        public async Task UpdateCustomerLocationCoordintes()
+        {
+            try
+            {
+                var location = await geolocation.GetLastKnownLocationAsync();
+                if (location == null)
+                {
+                    location = await geolocation.GetLocationAsync(new GeolocationRequest
+                    {
+                        DesiredAccuracy = GeolocationAccuracy.Medium,
+                        Timeout = TimeSpan.FromSeconds(10)
+                        ,
+                        RequestFullAccuracy = true,
+                    });
+                }
+                var readingObj = await dbContext.Database.Table<Reading>()
+                              .Where(r => r.CUSTOMER_NUMBER == Customer.Custnmbr)
+                              .FirstOrDefaultAsync();
+
+                if (readingObj != null && location != null)
+                {
+                    readingObj.Latitude = (decimal)location.Latitude;
+                    readingObj.Longitude = (decimal)location.Longitude;
+                    int isUpdated = await dbContext.Database.UpdateAsync(readingObj);
+                    if (isUpdated == 1)
+                    {
+                        await Shell.Current.DisplayAlert("Success!", "Customer Coordinates Updated!", "OK");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error!", "Coordinates could not be updated", "OK");
+            }
+        }
+
     }
 }

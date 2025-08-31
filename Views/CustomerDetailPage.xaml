@@ -1,122 +1,158 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    x:Class="SampleMauiMvvmApp.Views.CustomerDetailPage"
-    xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
-    xmlns:modelwrapper="clr-namespace:SampleMauiMvvmApp.ModelWrappers"
-    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
-    x:DataType="viewmodel:CustomerDetailViewModel"
-    Title="{Binding Title}">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="SampleMauiMvvmApp.Views.CustomerDetailPage"
+             xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:modelwrapper="clr-namespace:SampleMauiMvvmApp.ModelWrappers"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewmodel:CustomerDetailViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource PageBackgroundColor}">
 
-    <Grid
-    Padding="2,0,2,5"
-    ColumnDefinitions="*"
-    ColumnSpacing="0"
-    Margin="10"
-    RowDefinitions="Auto,*,Auto">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PageBackgroundColor">#F4F6F9</Color>
+            <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+            <Color x:Key="PrimaryTextColor">#2C3E50</Color>
+            <Color x:Key="SecondaryTextColor">#7F8C8D</Color>
+            <Color x:Key="AccentColor">#3498DB</Color>
+            <Color x:Key="DangerColor">#E74C3C</Color>
+            <Color x:Key="BorderColor">#EAEAEA</Color>
+            <Color x:Key="InputBackgroundColor">#FDFDFD</Color>
 
-        <!-- Header Section -->
-        <VerticalStackLayout Grid.Row="0">
-            <Frame BackgroundColor="White" CornerRadius="10" Padding="15" Margin="10">
-                <VerticalStackLayout>
-                    <StackLayout Orientation="Vertical" Padding="10,10,10,10" HorizontalOptions="FillAndExpand">
-                        <HorizontalStackLayout>
-                            <Label Padding="0,0,10,0" FontSize="20" TextColor="Grey" FontAttributes="Bold" Text="CUSTOMER INFO" />
-                            <Image HeightRequest="20" WidthRequest="20" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Source="info_icon.jpg" />
-                        </HorizontalStackLayout>
+            <Style x:Key="CardView" TargetType="Frame">
+                <Setter Property="HasShadow" Value="False" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="Padding" Value="15" />
+                <Setter Property="BackgroundColor" Value="{StaticResource CardBackgroundColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource BorderColor}" />
+            </Style>
 
-                        <!-- Area Information -->
-                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="AREA" />
-                        <HorizontalStackLayout>
-                            <Label Padding="0,0,40,0" FontSize="22" Text="{Binding CustStateErf}" TextColor="CornflowerBlue" FontAttributes="Bold" />
-                            <Border Style="{StaticResource iconBtnContainer}">
-                                <Image VerticalOptions="Center" HeightRequest="40" WidthRequest="40" Source="pencil_icon.jpg" />
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding UpdateCustomerLocationCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </HorizontalStackLayout>
+            <Style x:Key="HeaderLabel" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTextColor}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
 
-                        <!-- Phone Information -->
-                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="Phone NO" />
-                        <Label FontSize="15" FontAttributes="Bold" TextColor="CornflowerBlue" Text="{Binding Custphone1}" />
+            <Style x:Key="FieldTitleLabel" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource SecondaryTextColor}" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
 
-                        <!-- Meter Number -->
-                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="METER NO" />
-                        <HorizontalStackLayout>
-                            <Label FontSize="22" FontAttributes="Bold" Text="{Binding MeterNumber}" TextColor="CornflowerBlue" />
-                            <Border Style="{StaticResource iconBtnContainer}">
-                                <Image VerticalOptions="Center" HeightRequest="40" WidthRequest="40" Source="pencil_icon.jpg" />
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding UpdateCustomerMeterNoCommand}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </HorizontalStackLayout>
+            <Style x:Key="FieldValueLabel" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTextColor}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
 
-                        <!-- Readings -->
-                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="PREVIOUS READING" />
-                        <Label FontSize="40" FontAttributes="Bold" Text="{Binding CustPrevReading}" TextColor="Blue" />
-                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="CURRENT READING" />
-                        <Label FontSize="40" FontAttributes="Bold" Text="{Binding CustCurrentReading}" TextColor="Blue" />
-                        <Label FontSize="12" IsVisible="{Binding IsCurrentReading}" TextColor="Grey" FontAttributes="Italic,Bold" Text="Total Usage" />
-                        <Label FontSize="22" IsVisible="{Binding IsCurrentReading}" FontAttributes="Bold" Text="{Binding TotalUsage}" TextColor="Red" />
-                    </StackLayout>
+            <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="SecondaryButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryTextColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource BorderColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="15">
+
+            <Frame Style="{StaticResource CardView}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="CUSTOMER DETAILS" Style="{StaticResource HeaderLabel}" />
+                    <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" />
+
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="15">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                            <Label Text="AREA" Style="{StaticResource FieldTitleLabel}" />
+                            <Label Text="{Binding CustStateErf}" Style="{StaticResource FieldValueLabel}" TextColor="{StaticResource AccentColor}" />
+                        </VerticalStackLayout>
+                        <ImageButton Grid.Row="0" Grid.Column="1" Source="pencil_icon.jpg" Command="{Binding UpdateCustomerLocationCommand}" VerticalOptions="Center" HeightRequest="30" WidthRequest="30" />
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                            <Label Text="METER NO" Style="{StaticResource FieldTitleLabel}" />
+                            <Label Text="{Binding MeterNumber}" Style="{StaticResource FieldValueLabel}" />
+                        </VerticalStackLayout>
+                        <ImageButton Grid.Row="1" Grid.Column="1" Source="pencil_icon.jpg" Command="{Binding UpdateCustomerMeterNoCommand}" VerticalOptions="Center" HeightRequest="30" WidthRequest="30" />
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="2">
+                            <Label Text="PHONE NO" Style="{StaticResource FieldTitleLabel}" />
+                            <Label Text="{Binding Custphone1}" Style="{StaticResource FieldValueLabel}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </VerticalStackLayout>
             </Frame>
-        </VerticalStackLayout>
 
-        <!-- Scrollable Content -->
-        <ScrollView Grid.Row="1">
-            <StackLayout Spacing="10" Padding="10">
-                <!-- New Reading -->
-                <Frame BackgroundColor="White" CornerRadius="12" Padding="10" HasShadow="True">
-                    <Entry Placeholder="Enter new reading here"
-                           Keyboard="Numeric"
-                           Text="{Binding VmReading.C_reading}"
-                           FontSize="16"
-                           BackgroundColor="#f2f2f2"
-                           HeightRequest="50"/>
-                </Frame>
+            <Frame Style="{StaticResource CardView}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="METER READINGS" Style="{StaticResource HeaderLabel}" />
+                    <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" />
 
-                <toolkit:Expander>
-                    <toolkit:Expander.Header>
-                        <Label Text="Leave a comment..." FontAttributes="Italic" FontSize="Medium" />
-                    </toolkit:Expander.Header>
-                    <Frame BackgroundColor="White" Padding="10" CornerRadius="10" HasShadow="True">
-                        <VerticalStackLayout Spacing="10">
-                            <Editor Placeholder="Enter comment here..." AutoSize="TextChanges" Text="{Binding VmReading.Comment}" />
-                            <Image Source="camera_icon.jpg" HeightRequest="40" WidthRequest="40">
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding TakePhotoClickedCommand}" />
-                                </Image.GestureRecognizers>
-                            </Image>
-                        </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                        <Label Grid.Row="0" Grid.Column="0" Text="PREVIOUS" Style="{StaticResource FieldTitleLabel}" HorizontalOptions="Center" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding CustPrevReading}" Style="{StaticResource FieldValueLabel}" FontSize="28" HorizontalOptions="Center" />
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="CURRENT" Style="{StaticResource FieldTitleLabel}" HorizontalOptions="Center" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding CustCurrentReading}" Style="{StaticResource FieldValueLabel}" FontSize="28" HorizontalOptions="Center" />
+                    </Grid>
+
+                    <VerticalStackLayout IsVisible="{Binding IsCurrentReading}" Spacing="2" HorizontalOptions="Center">
+                        <Label Text="TOTAL USAGE" Style="{StaticResource FieldTitleLabel}" HorizontalOptions="Center" />
+                        <Label Text="{Binding TotalUsage}" Style="{StaticResource FieldValueLabel}" FontSize="24" TextColor="{StaticResource DangerColor}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardView}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="NEW ENTRY" Style="{StaticResource HeaderLabel}" />
+                    <BoxView HeightRequest="1" Color="{StaticResource BorderColor}" />
+
+                    <Frame BorderColor="{StaticResource BorderColor}" CornerRadius="8" Padding="0" BackgroundColor="{StaticResource InputBackgroundColor}">
+                        <Entry Placeholder="Enter new reading here" Keyboard="Numeric" Text="{Binding VmReading.C_reading}" FontSize="16" HeightRequest="50" VerticalTextAlignment="Center" Margin="10,0" />
                     </Frame>
-                </toolkit:Expander>
 
-                <Button
-                CornerRadius="20"
-                WidthRequest="350"
-                HeightRequest="60"
-                FontAttributes="Bold"
-                Text="Create New Reading"
-                FontAutoScalingEnabled="True"
-                Command="{Binding CreateReadingCommand}">
+                    <toolkit:Expander>
+                        <toolkit:Expander.Header>
+                            <HorizontalStackLayout Spacing="5" Padding="5,10">
+                                <Label Text="Leave a comment (optional)" FontAttributes="Italic" TextColor="{StaticResource SecondaryTextColor}" VerticalOptions="Center" />
+                                <Image Source="expand_arrow_icon.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </toolkit:Expander.Header>
+                        <Frame BorderColor="{StaticResource BorderColor}" CornerRadius="8" Padding="10" BackgroundColor="{StaticResource InputBackgroundColor}">
+                            <VerticalStackLayout Spacing="10">
+                                <Editor Placeholder="Type your comment..." AutoSize="TextChanges" Text="{Binding VmReading.Comment}" />
+                                <ImageButton Source="camera_icon.jpg" Command="{Binding TakePhotoClickedCommand}" HeightRequest="35" WidthRequest="35" HorizontalOptions="Start" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </toolkit:Expander>
+                </VerticalStackLayout>
+            </Frame>
+
+            <VerticalStackLayout Spacing="10" Margin="0,15,0,0">
+                <Button Style="{StaticResource PrimaryButton}" Text="Create New Reading" Command="{Binding CreateReadingCommand}">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button" Binding="{Binding IsUpdate}" Value="true">
                             <Setter Property="Text" Value="Update Reading" />
-                            <Setter Property="BackgroundColor" Value="OrangeRed" />
-                            <Setter Property="TextColor" Value="White" />
-                            <Setter Property="FontAttributes" Value="Bold" />
+                            <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
-            </StackLayout>
-        </ScrollView>
 
-        <Button TextColor="White" BackgroundColor="Gray" Grid.Row="2" CornerRadius="20" Text="Go Back" Command="{Binding GoBackCommand}" />
-    </Grid>
-
+                <Button Text="Go Back" Command="{Binding GoBackCommand}" Style="{StaticResource SecondaryButton}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
