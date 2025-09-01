@@ -21,6 +21,11 @@ namespace SampleMauiMvvmApp.Views
             // Handle user tapping on the map
             customerMap.MapClicked += OnMapClicked;
         }
+        private async void OnBackArrowClicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
+
 
         protected override async void OnAppearing()
         {

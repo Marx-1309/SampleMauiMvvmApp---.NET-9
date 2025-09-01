@@ -3,15 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="SampleMauiMvvmApp.Views.CustomerMapPage"
-             Title="Customer Map">
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False">
 
     <Grid>
-        <!-- Google Map -->
+        <!-- Fullscreen Google Map -->
         <maps:Map x:Name="customerMap"
                   MapType="Street"
                   IsShowingUser="True"
                   VerticalOptions="FillAndExpand"
                   HorizontalOptions="FillAndExpand"/>
+
+        <!-- Floating Back Arrow Button -->
+        <ImageButton Source="go_back_icon.jpg"
+                     BackgroundColor="Transparent"
+                     WidthRequest="45"
+                     HeightRequest="45"
+                     Padding="10"
+                     Margin="20"
+                     HorizontalOptions="Start"
+                     VerticalOptions="Start"
+                     Clicked="OnBackArrowClicked"/>
 
         <!-- Centered Activity Indicator -->
         <ActivityIndicator
