@@ -48,7 +48,7 @@ public static class MauiProgram
         builder.Services.AddTransient<UncapturedReadingsPage>();
         builder.Services.AddSingleton<MonthPage>();
         builder.Services.AddTransientWithShellRoute<ExceptionReadingListPage, ReadingViewModel>(nameof(ExceptionReadingListPage));
-        builder.Services.AddTransient<CustomerDetailPage>();
+        builder.Services.AddSingleton<CustomerDetailPage>();
         builder.Services.AddTransient<CapturedReadingsPage>();
         builder.Services.AddTransient<LocationPage>();
         builder.Services.AddScoped<UncapturedReadingsByAreaPage>();

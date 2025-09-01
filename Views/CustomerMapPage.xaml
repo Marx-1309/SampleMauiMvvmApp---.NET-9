@@ -12,5 +12,14 @@
                   IsShowingUser="True"
                   VerticalOptions="FillAndExpand"
                   HorizontalOptions="FillAndExpand"/>
+
+        <!-- Centered Activity Indicator -->
+        <ActivityIndicator
+            IsVisible="{Binding IsBusy}"
+            IsRunning="{Binding IsBusy}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="50"
+            HeightRequest="50" />
     </Grid>
 </ContentPage>

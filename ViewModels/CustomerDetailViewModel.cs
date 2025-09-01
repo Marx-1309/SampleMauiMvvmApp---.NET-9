@@ -1,4 +1,6 @@
-﻿namespace SampleMauiMvvmApp.ViewModels
+﻿using Microsoft.Maui.Networking;
+
+namespace SampleMauiMvvmApp.ViewModels
 {
     [QueryProperty("Customer", "Customer")]
     [QueryProperty("Reading", "Reading")]
@@ -35,6 +37,12 @@
 
         [ObservableProperty]
         private string meterNumber;
+
+        [ObservableProperty]
+        private decimal latitude;
+
+        [ObservableProperty]
+        private decimal longitude;
 
         [ObservableProperty]
         private string routeNumber;
@@ -100,6 +108,8 @@
                 RouteNumber = reading.RouteNumber;
                 Custphone1 = (long)reading.PHONE1;
                 erfNumber = reading.ERF_NUMBER;
+                Longitude  = (decimal)(reading.Longitude ?? 0);
+                Latitude = (decimal)(reading.Latitude ?? 0);
                 TotalUsage = $"{((decimal?)reading.CURRENT_READING >= (decimal?)reading.PREVIOUS_READING ? (decimal?)reading.CURRENT_READING - (decimal?)reading.PREVIOUS_READING : 0)}";
                 bool isCurrentReading = IsCurrentReadingCaptured(reading.CURRENT_READING);
 
@@ -201,6 +211,11 @@
                     }
                 }
 
+                var locationCoordinate = await GetCustomerLocationCoordinatesAsync();
+
+                CurrentMonthReading.Longitude = locationCoordinate.Longitude;
+                CurrentMonthReading.Latitude = locationCoordinate.Latitude;
+
                 CurrentMonthReading.Comment = VmReading.Comment;
                 //CurrentMonthReading.READING_DATE = DateTime.Now.ToString();
                 //CurrentMonthReading.Meter_Reader = loggedInUser.Username;
@@ -210,7 +225,7 @@
                 CurrentMonthReading.WaterReadingExportID = (int)await readingService.GetLatestExportItemId();
 
                 Reading newReading = new Models.Reading();
-                //GetLocation();
+
                 if (string.IsNullOrEmpty(CurrentMonthReading.AREA) ||
                                 string.IsNullOrWhiteSpace(CurrentMonthReading.AREA.Trim()) ||
                                 CurrentMonthReading.AREA.Equals("NULL", StringComparison.OrdinalIgnoreCase))
@@ -248,7 +263,7 @@
                     {
                         await Shell.Current.DisplayAlert($"Success!", $"A reading for {CurrentMonthReading.CUSTOMER_NAME.Substring(0, 15).Trim() ?? $"customer"} Created!", "OK");
                     }
-                    await UpdateCustomerLocationCoordintes();
+
                     // Propagate the new reading to the main reading page.
                     WeakReferenceMessenger.Default.Send(new ReadingCreateMessage(newReading));
                     await Task.Delay(1000);
@@ -545,7 +560,7 @@
             return "";
         }
 
-        public async Task UpdateCustomerLocationCoordintes()
+        public async Task<(decimal? Latitude, decimal? Longitude)> GetCustomerLocationCoordinatesAsync()
         {
             try
             {
@@ -555,31 +570,50 @@
                     location = await geolocation.GetLocationAsync(new GeolocationRequest
                     {
                         DesiredAccuracy = GeolocationAccuracy.Medium,
-                        Timeout = TimeSpan.FromSeconds(10)
-                        ,
+                        Timeout = TimeSpan.FromSeconds(10),
                         RequestFullAccuracy = true,
                     });
                 }
-                var readingObj = await dbContext.Database.Table<Reading>()
-                              .Where(r => r.CUSTOMER_NUMBER == Customer.Custnmbr)
-                              .FirstOrDefaultAsync();
 
-                if (readingObj != null && location != null)
+                if (location != null)
                 {
-                    readingObj.Latitude = (decimal)location.Latitude;
-                    readingObj.Longitude = (decimal)location.Longitude;
-                    int isUpdated = await dbContext.Database.UpdateAsync(readingObj);
-                    if (isUpdated == 1)
-                    {
-                        await Shell.Current.DisplayAlert("Success!", "Customer Coordinates Updated!", "OK");
-                    }
+                    return ((decimal)location.Latitude, (decimal)location.Longitude);
+                }
+                else
+                {
+                    return (null, null);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await Shell.Current.DisplayAlert("Error!", "Coordinates could not be updated", "OK");
+                await Shell.Current.DisplayAlert("Error!", "Coordinates could not be retrieved", "OK");
+                return (null, null);
             }
         }
 
+        [RelayCommand]
+        public async Task OpenMapPageAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(CustomerMapPage), true, new Dictionary<string, object>
+            {
+                { "CustomerNumber", Customer.Custnmbr }
+            });
+        }
+
+        public bool IsLocationSet => Latitude != 0 || Longitude != 0;
+
+        public bool IsLocationNotSet => Latitude == 0 && Longitude == 0;
+        // Override partial setters so bindings update when Lat/Long changes
+        partial void OnLatitudeChanged(decimal value)
+        {
+            OnPropertyChanged(nameof(IsLocationSet));
+            OnPropertyChanged(nameof(IsLocationNotSet));
+        }
+
+        partial void OnLongitudeChanged(decimal value)
+        {
+            OnPropertyChanged(nameof(IsLocationSet));
+            OnPropertyChanged(nameof(IsLocationNotSet));
+        }
     }
 }

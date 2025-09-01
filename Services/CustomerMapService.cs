@@ -60,5 +60,35 @@ namespace SampleMauiMvvmApp.Services
                 return new List<ReadingDto>();
             }
         }
+
+        public async Task<bool> UpdateCustomerLocationAsync(string customerNo, decimal latitude, decimal longitude)
+        {
+            try
+            {
+                var reading = await dbContext.Database.Table<Reading>()
+                    .FirstOrDefaultAsync(r => r.CUSTOMER_NUMBER == customerNo);
+
+                if (reading != null)
+                {
+                    reading.Latitude = latitude;
+                    reading.Longitude = longitude;
+
+                    await dbContext.Database.UpdateAsync(reading);
+
+                    StatusMessage = "Customer location updated successfully.";
+                    return true;
+                }
+                else
+                {
+                    StatusMessage = "Customer not found.";
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "An error occurred while updating the customer location.";
+                return false;
+            }
+        }
     }
 }
