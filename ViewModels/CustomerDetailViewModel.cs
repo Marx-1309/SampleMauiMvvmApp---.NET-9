@@ -217,8 +217,6 @@ namespace SampleMauiMvvmApp.ViewModels
                 CurrentMonthReading.Latitude = locationCoordinate.Latitude;
 
                 CurrentMonthReading.Comment = VmReading.Comment;
-                //CurrentMonthReading.READING_DATE = DateTime.Now.ToString();
-                //CurrentMonthReading.Meter_Reader = loggedInUser.Username;
                 CurrentMonthReading.ReadingTaken = true;
                 CurrentMonthReading.ReadingNotTaken = false;
                 CurrentMonthReading.ReadingSync = false;
