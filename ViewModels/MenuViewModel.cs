@@ -1,72 +1,77 @@
 ﻿using CommunityToolkit.Maui.Core;
+using SampleMauiMvvmApp.Services;
+using System.Collections.ObjectModel;
 
 namespace SampleMauiMvvmApp.ViewModels
 {
-    internal partial class MenuViewModel : BaseViewModel
+    public partial class MenuViewModel : BaseViewModel
     {
-        public ObservableCollection<SampleMauiMvvmApp.Models.Menu> Menus { get; set; }
+        private readonly ReadingExportService _readingExportService;
 
-        public MenuViewModel()
+        public ObservableCollection<SampleMauiMvvmApp.Models.Menu> Menus { get; }
+
+        // Constructor using Dependency Injection
+        public MenuViewModel(ReadingExportService readingExportService)
         {
-            Menus = new ObservableCollection<SampleMauiMvvmApp.Models.Menu>{
-                new Menu{
+            _readingExportService = readingExportService ?? throw new ArgumentNullException(nameof(readingExportService));
+
+            Menus = new ObservableCollection<SampleMauiMvvmApp.Models.Menu>
+            {
+                new Models.Menu
+                {
                     Name = "Abnormal Consumption",
                     Image = "abnormal_use_icon.png",
                     Label= "",
                     Url = "ExceptionReadingListPage",
                     IsActive=false
                 },
-                new Menu{
+                new Models.Menu
+                {
                     Name = "My Notes",
                     Image = "notes_icon.png",
                     Label= "",
                     Url = "NotesListPage",
                     IsActive=false
                 },
-                new Menu{
+                new Models.Menu
+                {
                     Name = "Scan For New Customer(s)",
                     Image = "scan_db_icon.png",
                     Label= "",
                     Url = "SyncNewCustomersPage",
                     IsActive=true
                 },
-                new Menu{
+                new Models.Menu
+                {
                     Name = "Recycle Readings",
                     Image = "export_sync.png",
                     Label= "",
                     Url = "ReflushPage",
                     IsActive=true
                 },
-                    new Menu{
+                new Models.Menu
+                {
                     Name = "Integrated Services",
                     Image = "cloud_intergration.png",
                     Label= "",
                     Url = "ReflushPage",
-                    IsActive=true,
+                    IsActive=true
                 },
-                new Menu{
-                    Name = "Google  Maps",
+                new Models.Menu
+                {
+                    Name = "Google Maps",
                     Image = "map_icon3.jpg",
                     Label= "",
                     Url = "CustomerMapPage",
-                    IsActive=true,
+                    IsActive=true
                 }
-                //new Menu{
-                //    Name = "Statistics",
-                //    Image = "reading_stats.jpg",
-                //    Label= "",
-                //    Url = "",
-                //    IsActive=true,
-                //}
             };
         }
 
-        #region Prepare a toast/snackbar
+        #region Snackbar / Toast
 
-        public Snackbar SnackBar()
+        public Snackbar SnackBar(string text = "This is a Snackbar")
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
             var snackbarOptions = new SnackbarOptions
             {
                 BackgroundColor = Colors.Red,
@@ -78,71 +83,90 @@ namespace SampleMauiMvvmApp.ViewModels
                 CharacterSpacing = 0.5
             };
 
-            string text = "This is a Snackbar";
-            string actionButtonText = "Click Here to Dismiss";
-            Action action = async () => await Shell.Current.DisplayAlert("Reseting and re-seeding", "You are about to delete and restore", "OK", "Cancel");
-            if (action.Equals("Cancel")) ;
+            Action action = async () =>
+            {
+                await Shell.Current.DisplayAlert("Notice", "You triggered the snackbar action", "OK");
+            };
+
             TimeSpan duration = TimeSpan.FromSeconds(5);
 
-            var snackbar = Snackbar.Make(text, action, actionButtonText, duration, snackbarOptions);
-
-            return (Snackbar)snackbar;
+            return (Snackbar)Snackbar.Make(text, action, "Dismiss", duration, snackbarOptions);
         }
 
-        #endregion Prepare a toast/snackbar
+        #endregion
+
+        #region Commands
 
         [RelayCommand]
-        private async Task GoToDetails(Menu menu)
+        private async Task GoToDetails(Models.Menu menu)
         {
-            if (menu == null)
-                return;
+            if (menu == null) return;
+
             try
             {
-                if (menu.Name == "Integrated Services".ToString())
+                if (menu.Name == "Integrated Services")
                 {
-                    var response = await AppShell.Current.DisplayActionSheet("Select Option", "cancel", null, "CityTaps", "Others");
+                    var response = await AppShell.Current.DisplayActionSheet("Select Option", "Cancel", null, "CityTaps", "Others");
+
                     if (response == "CityTaps")
                     {
                         DisplayToast("This service is not available");
                         return;
-
-                        var loggedInUsername = Preferences.Get("username", true);
-                        var userPassword = await Shell.Current.DisplayPromptAsync("Authentication", "Please enter your password", "cancel", "Connect Now".ToString(), "enter password here...", keyboard: Keyboard.Text);
-                        var dictData = new Dictionary<string, object>();
-                        dictData.Add("integratedService", response);
-                        await AppShell.Current.GoToAsync(nameof(ReflushPage), dictData);
                     }
-                    else DisplayToast("This service is not available");
-                    return;
+                    else
+                    {
+                        DisplayToast("This service is not available");
+                        return;
+                    }
                 }
-                //if (menu.Name == "Scan For New Customer(s)")
-                //{
-                //    DisplayToast("This service is not available");
-                //    return;
-                //}
-                await Shell.Current.GoToAsync(menu.Url?.ToString());
+
+                if (!string.IsNullOrEmpty(menu.Url))
+                    await Shell.Current.GoToAsync(menu.Url);
             }
             catch (Exception ex)
             {
-
+                // Optionally log exception
+                DisplayToast($"Error navigating: {ex.Message}");
             }
-
         }
 
         [RelayCommand]
-        private async Task ConfirmLogout()
+        public async Task ConfirmLogout()
         {
-            bool isConfirm = await Shell.Current.DisplayAlert($"Logout or switch users", $"You are about to logout of {Preferences.Default.Get("username", "user")} profile", "OK", "Cancel");
+            var pendingCount = await _readingExportService.PendingNotSyncedReadings();
 
-            if (isConfirm.Equals(true))
+            if (pendingCount > 0)
+            {
+                await Shell.Current.DisplayAlert(
+                    $"{pendingCount} reading(s) not uploaded!",
+                    "Please sync the pending readings, and try again!",
+                    "OK");
+                return;
+            }
+
+            bool isConfirm = await Shell.Current.DisplayAlert(
+                "Logout or switch users",
+                $"You are about to logout of {Preferences.Default.Get("username", "user")} profile",
+                "OK", "Cancel");
+
+            if (!isConfirm) return;
+
+            try
             {
                 IsBusy = true;
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
                 SecureStorage.Remove("Token");
                 Preferences.Default.Clear();
+
+                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            }
+            finally
+            {
                 IsBusy = false;
-                await Shell.Current.GoToAsync(nameof(LoginPage));
             }
         }
+
+        #endregion
     }
 }

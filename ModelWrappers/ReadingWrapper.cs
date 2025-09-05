@@ -27,6 +27,8 @@
                 //ReadingDate = (DateTime)readingModel.READING_DATE;
                 Comment = readingModel.Comment;
                 ReadingNotTaken = (bool)readingModel.ReadingNotTaken;
+                Latitude = readingModel.Latitude ?? 0m;
+                Longitude = readingModel.Longitude ?? 0m;
                 //ReadingTaken = (bool)readingModel.ReadingTaken;
                 //ReadingSync = (bool)readingModel.ReadingSync;
             }
@@ -123,6 +125,12 @@
 
         [ObservableProperty]
         private bool readingSync;
+
+        [ObservableProperty]
+        private decimal latitude;
+
+        [ObservableProperty]
+        private decimal longitude;
 
         [ObservableProperty]
         private bool areaUpdated;

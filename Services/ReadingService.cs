@@ -905,6 +905,7 @@ namespace SampleMauiMvvmApp.Services
                             //var readingsFromSqlServer = await response.Content.ReadFromJsonAsync<List<ReadingDto>>();
 
                             var DeserializedReadingsFromSqlServer = JsonConvert.DeserializeObject<List<ReadingDto>>(readingsFromSqlServer);
+
                             var p = DeserializedReadingsFromSqlServer.Where(r => r.METER_NUMBER != null).ToList();
                             var lastExportItemx = await dbContext.Database.Table<ReadingExport>()
                           .OrderByDescending(r => r.WaterReadingExportID)

@@ -45,10 +45,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<LogoutPage>();
         builder.Services.AddSingleton<ListOfReadingByMonthPage>();
         builder.Services.AddSingleton<MonthCustomerTabPage>();
-        builder.Services.AddTransient<UncapturedReadingsPage>();
+        builder.Services.AddSingleton<UncapturedReadingsPage>();
         builder.Services.AddSingleton<MonthPage>();
         builder.Services.AddTransientWithShellRoute<ExceptionReadingListPage, ReadingViewModel>(nameof(ExceptionReadingListPage));
-        builder.Services.AddSingleton<CustomerDetailPage>();
+        builder.Services.AddTransient<CustomerDetailPage>();
         builder.Services.AddTransient<CapturedReadingsPage>();
         builder.Services.AddTransient<LocationPage>();
         builder.Services.AddScoped<UncapturedReadingsByAreaPage>();
@@ -60,6 +60,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ReadingViewModel>();
         builder.Services.AddTransient<NotesViewModel>();
         builder.Services.AddSingleton<MonthViewModel>();
+        builder.Services.AddTransient<MenuViewModel>();
         builder.Services.AddScoped<CustomerDetailViewModel>();
         builder.Services.AddSingleton<CustomerViewModel>();
         builder.Services.AddTransient<CustomerMapViewModel>();

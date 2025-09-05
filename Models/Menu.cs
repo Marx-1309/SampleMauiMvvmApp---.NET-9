@@ -1,6 +1,6 @@
 ﻿namespace SampleMauiMvvmApp.Models
 {
-    internal class Menu
+    public class Menu
     {
         public string Name { get; set; }
         public string Image { get; set; }

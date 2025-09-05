@@ -211,10 +211,13 @@ namespace SampleMauiMvvmApp.ViewModels
                     }
                 }
 
-                var locationCoordinate = await GetCustomerLocationCoordinatesAsync();
-
-                CurrentMonthReading.Longitude = locationCoordinate.Longitude;
-                CurrentMonthReading.Latitude = locationCoordinate.Latitude;
+                if (CurrentMonthReading.Latitude == null || CurrentMonthReading.Longitude == null ||
+                    CurrentMonthReading.Latitude == 0 || CurrentMonthReading.Longitude == 0)
+                {
+                    var locationCoordinate = await GetCustomerLocationCoordinatesAsync();
+                    CurrentMonthReading.Longitude = locationCoordinate.Longitude;
+                    CurrentMonthReading.Latitude = locationCoordinate.Latitude;
+                }
 
                 CurrentMonthReading.Comment = VmReading.Comment;
                 CurrentMonthReading.ReadingTaken = true;
