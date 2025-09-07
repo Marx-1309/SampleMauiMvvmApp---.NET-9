@@ -27,15 +27,19 @@ namespace SampleMauiMvvmApp.Services
         {
             try
             {
-                return await dbContext.Database.Table<Reading>().Where(x => x.CUSTOMER_NUMBER == customerId).ToListAsync();
+                var readings = await dbContext.Database.Table<Reading>()
+                                         .Where(x => x.CUSTOMER_NUMBER == customerId)
+                                         .ToListAsync();
+
+                return readings;
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Failed to retrieve data. {ex.Message}";
+                return new List<Reading>(); // return empty list instead of null
             }
-
-            return null;
         }
+
 
         public async Task<List<Reading>> GetReadingsByMonthId(int monthId)
         {
@@ -413,7 +417,7 @@ namespace SampleMauiMvvmApp.Services
                 if (Id != 0 || Id < 0)
                 {
                     var r = await dbContext.Database.Table<Reading>()
-                        .Where(r => (r.MonthID == Id && r.ReadingSync == false && r.ReadingTaken == true && r.CURRENT_READING >= 0 && r.WaterReadingExportDataID > 0) || (r.AreaUpdated == true))
+                        .Where(r => (r.MonthID == Id && r.ReadingSync == false && r.ReadingTaken == true && r.CURRENT_READING >= 0 && r.WaterReadingExportDataID > 0) || (r.AreaUpdated == true && r.ReadingSync == false) || (r.CoordinatesUpdated == true && r.ReadingSync == false))
                         .OrderBy(r => r.ReadingDate).ToListAsync();
 
                     //var loggedInUser = await dbContext.Database.Table<LoginHistory>().OrderByDescending(r => r.LoginId).FirstAsync();
@@ -905,6 +909,7 @@ namespace SampleMauiMvvmApp.Services
                             //var readingsFromSqlServer = await response.Content.ReadFromJsonAsync<List<ReadingDto>>();
 
                             var DeserializedReadingsFromSqlServer = JsonConvert.DeserializeObject<List<ReadingDto>>(readingsFromSqlServer);
+
                             var p = DeserializedReadingsFromSqlServer.Where(r => r.METER_NUMBER != null).ToList();
                             var lastExportItemx = await dbContext.Database.Table<ReadingExport>()
                           .OrderByDescending(r => r.WaterReadingExportID)

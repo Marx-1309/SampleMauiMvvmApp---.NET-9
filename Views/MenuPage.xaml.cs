@@ -2,14 +2,9 @@ namespace SampleMauiMvvmApp.Views;
 
 public partial class MenuPage : ContentPage
 {
-    public MenuPage()
+    public MenuPage(MenuViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = new MenuViewModel();
+        BindingContext = viewModel;
     }
-
-    //private async void ImageButton_Clicked(object sender, EventArgs e)
-    //{
-    //    await Shell.Current.DisplayAlert("Hello","From Menu Page","OK");
-    //}
 }

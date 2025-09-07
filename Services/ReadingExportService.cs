@@ -515,7 +515,7 @@ namespace SampleMauiMvvmApp.Services
                 var r = await dbContext.Database.Table<Reading>()
                         .Where(((r => r.ReadingSync == false
                         && r.ReadingTaken == true && r.CURRENT_READING >= 0
-                        && r.WaterReadingExportDataID > 0 || (r.AreaUpdated == true && r.ReadingSync == false))))
+                        && r.WaterReadingExportDataID > 0 || (r.AreaUpdated == true && r.ReadingSync == false) || (r.CoordinatesUpdated == true && r.ReadingSync == false) )))
                         .OrderBy(r => r.ReadingDate).ToListAsync();
 
                 if (r.Count > 0)

@@ -1,4 +1,6 @@
-﻿namespace SampleMauiMvvmApp.ViewModels
+﻿using Microsoft.Maui.Networking;
+
+namespace SampleMauiMvvmApp.ViewModels
 {
     [QueryProperty("Customer", "Customer")]
     [QueryProperty("Reading", "Reading")]
@@ -35,6 +37,12 @@
 
         [ObservableProperty]
         private string meterNumber;
+
+        [ObservableProperty]
+        private decimal latitude;
+
+        [ObservableProperty]
+        private decimal longitude;
 
         [ObservableProperty]
         private string routeNumber;
@@ -100,6 +108,8 @@
                 RouteNumber = reading.RouteNumber;
                 Custphone1 = (long)reading.PHONE1;
                 erfNumber = reading.ERF_NUMBER;
+                Longitude  = (decimal)(reading.Longitude ?? 0);
+                Latitude = (decimal)(reading.Latitude ?? 0);
                 TotalUsage = $"{((decimal?)reading.CURRENT_READING >= (decimal?)reading.PREVIOUS_READING ? (decimal?)reading.CURRENT_READING - (decimal?)reading.PREVIOUS_READING : 0)}";
                 bool isCurrentReading = IsCurrentReadingCaptured(reading.CURRENT_READING);
 
@@ -201,16 +211,22 @@
                     }
                 }
 
+                if (CurrentMonthReading.Latitude == null || CurrentMonthReading.Longitude == null ||
+                    CurrentMonthReading.Latitude == 0 || CurrentMonthReading.Longitude == 0)
+                {
+                    var locationCoordinate = await GetCustomerLocationCoordinatesAsync();
+                    CurrentMonthReading.Longitude = locationCoordinate.Longitude;
+                    CurrentMonthReading.Latitude = locationCoordinate.Latitude;
+                }
+
                 CurrentMonthReading.Comment = VmReading.Comment;
-                //CurrentMonthReading.READING_DATE = DateTime.Now.ToString();
-                //CurrentMonthReading.Meter_Reader = loggedInUser.Username;
                 CurrentMonthReading.ReadingTaken = true;
                 CurrentMonthReading.ReadingNotTaken = false;
                 CurrentMonthReading.ReadingSync = false;
                 CurrentMonthReading.WaterReadingExportID = (int)await readingService.GetLatestExportItemId();
 
                 Reading newReading = new Models.Reading();
-                //GetLocation();
+
                 if (string.IsNullOrEmpty(CurrentMonthReading.AREA) ||
                                 string.IsNullOrWhiteSpace(CurrentMonthReading.AREA.Trim()) ||
                                 CurrentMonthReading.AREA.Equals("NULL", StringComparison.OrdinalIgnoreCase))
@@ -248,7 +264,7 @@
                     {
                         await Shell.Current.DisplayAlert($"Success!", $"A reading for {CurrentMonthReading.CUSTOMER_NAME.Substring(0, 15).Trim() ?? $"customer"} Created!", "OK");
                     }
-                    await UpdateCustomerLocationCoordintes();
+
                     // Propagate the new reading to the main reading page.
                     WeakReferenceMessenger.Default.Send(new ReadingCreateMessage(newReading));
                     await Task.Delay(1000);
@@ -267,6 +283,20 @@
             {
                 return;
             }
+        }
+
+        private string[] GetAvailableLocations()
+        {
+            return new string[]
+            {
+                "OPUWO PROPER - TOWN", "OPUWO EXT 2 - OKATUWO", "OTUZEMBA", "KATUTURA",
+                "OURANDA", "ORUTJANDJA NORTH", "BUSINESS EXT 3", "OPUWO EXT 1 - SCHEIDERS HOUSE",
+                "OPUWO PROPER & EXT - A HOUSE", "OPUWO PROPER EXT 1 & EXT 6 - B HOUSE",
+                "OTUZEMBA EXT 1 - ONDUUNJE", "ORUTJANDJA WEST", "OTUZEMBA INFORMAL",
+                "OKATUTURA WATER", "OKATUTURA RECEIPTION", "ORUTJANDJA WATER", "OLD BUSINESS",
+                "SHACK DWELLERS", "OTUZEMBA EXT 2", "OKATUWO INFORMAL", "ETATI PROPER EXT 1 & 2",
+                "OPUWO EXT 12", "OPUWO EXT 7", "OPUWO EXT 8", "UNCLASSIFIED"
+            };
         }
 
         [RelayCommand]
@@ -387,36 +417,6 @@
             VmReading.C_reading = string.Empty;
         }
 
-        #region CustomerLocations
-
-        private string location1 = "OPUWO PROPER - TOWN";
-        private string location2 = "OPUWO EXT 2 - OKATUWO";
-        private string location3 = "OTUZEMBA";
-        private string location4 = "KATUTURA";
-        private string location5 = "OURANDA";
-        private string location6 = "ORUTJANDJA NORTH";
-        private string location7 = "BUSINESS EXT 3";
-        private string location8 = "OPUWO EXT 1 - SCHEIDERS HOUSE";
-        private string location9 = "OPUWO PROPER & EXT - A HOUSE";
-        private string location10 = "OPUWO PROPER EXT 1 & EXT 6 - B HOUSE";
-        private string location11 = "OTUZEMBA EXT 1 - ONDUUNJE";
-        private string location12 = "ORUTJANDJA WEST";
-        private string location13 = "OTUZEMBA INFORMAL";
-        private string location14 = "OKATUTURA WATER";
-        private string location15 = "OKATUTURA RECEIPTION";
-        private string location16 = "ORUTJANDJA WATER";
-        private string location17 = "OLD BUSINESS";
-        private string location18 = "SHACK DWELLERS";
-        private string location19 = "OTUZEMBA EXT 2";
-        private string location20 = "OKATUWO INFORMAL";
-        private string location21 = "ETATI PROPER EXT 1 & 2";
-        private string location22 = "OPUWO EXT 12";
-        private string location23 = "OPUWO EXT 7";
-        private string location24 = "OPUWO EXT 8";
-        private string location25 = "UNCLASSIFIED";
-
-        #endregion CustomerLocations
-
         public async Task<string> AddNewCustomerLocation(string customerNo)
         {
             var cstObj = await dbContext.Database.Table<Reading>()
@@ -439,13 +439,13 @@
 
             while (!hasLocation)
             {
-                var userLocation = await Shell.Current.DisplayActionSheet(
-                    "Select Location", null, null,
-                    location1, location2, location3, location4, location5, location6,
-                    location7, location8, location9, location10, location11, location12,
-                    location13, location14, location15, location16, location17, location18,
-                    location19, location20, location21, location22, location23, location24, location25
-                );
+                string[] locations = GetAvailableLocations();
+                var userLocation = await Shell.Current.DisplayActionSheet("Select Location", "Cancel", null, locations);
+
+                if (string.IsNullOrEmpty(userLocation) || userLocation == "Cancel")
+                {
+                    return null;
+                }
 
                 if (!string.IsNullOrEmpty(userLocation) &&
                     !string.IsNullOrWhiteSpace(userLocation) &&
@@ -516,13 +516,13 @@
 
                 if (cstObj1 != null)
                 {
-                    var userLocation = await Shell.Current.DisplayActionSheet(
-                        "Select Location", null, null,
-                        location1, location2, location3, location4, location5, location6,
-                        location7, location8, location9, location10, location11, location12,
-                        location13, location14, location15, location16, location17, location18,
-                        location19, location20, location21, location22, location23, location24, location25
-                    );
+                    string[] locations = GetAvailableLocations();
+                    var userLocation = await Shell.Current.DisplayActionSheet("Select Location", "Cancel", null, locations);
+
+                    if (string.IsNullOrEmpty(userLocation) || userLocation == "Cancel")
+                    {
+                        return null;
+                    }
 
                     if (!string.IsNullOrEmpty(userLocation))
                     {
@@ -545,7 +545,7 @@
             return "";
         }
 
-        public async Task UpdateCustomerLocationCoordintes()
+        public async Task<(decimal? Latitude, decimal? Longitude)> GetCustomerLocationCoordinatesAsync()
         {
             try
             {
@@ -555,31 +555,50 @@
                     location = await geolocation.GetLocationAsync(new GeolocationRequest
                     {
                         DesiredAccuracy = GeolocationAccuracy.Medium,
-                        Timeout = TimeSpan.FromSeconds(10)
-                        ,
+                        Timeout = TimeSpan.FromSeconds(10),
                         RequestFullAccuracy = true,
                     });
                 }
-                var readingObj = await dbContext.Database.Table<Reading>()
-                              .Where(r => r.CUSTOMER_NUMBER == Customer.Custnmbr)
-                              .FirstOrDefaultAsync();
 
-                if (readingObj != null && location != null)
+                if (location != null)
                 {
-                    readingObj.Latitude = (decimal)location.Latitude;
-                    readingObj.Longitude = (decimal)location.Longitude;
-                    int isUpdated = await dbContext.Database.UpdateAsync(readingObj);
-                    if (isUpdated == 1)
-                    {
-                        await Shell.Current.DisplayAlert("Success!", "Customer Coordinates Updated!", "OK");
-                    }
+                    return ((decimal)location.Latitude, (decimal)location.Longitude);
+                }
+                else
+                {
+                    return (null, null);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await Shell.Current.DisplayAlert("Error!", "Coordinates could not be updated", "OK");
+                await Shell.Current.DisplayAlert("Error!", "Coordinates could not be retrieved", "OK");
+                return (null, null);
             }
         }
 
+        [RelayCommand]
+        public async Task OpenMapPageAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(CustomerMapPage), true, new Dictionary<string, object>
+            {
+                { "CustomerNumber", Customer.Custnmbr }
+            });
+        }
+
+        public bool IsLocationSet => Latitude != 0 || Longitude != 0;
+
+        public bool IsLocationNotSet => Latitude == 0 && Longitude == 0;
+        // Override partial setters so bindings update when Lat/Long changes
+        partial void OnLatitudeChanged(decimal value)
+        {
+            OnPropertyChanged(nameof(IsLocationSet));
+            OnPropertyChanged(nameof(IsLocationNotSet));
+        }
+
+        partial void OnLongitudeChanged(decimal value)
+        {
+            OnPropertyChanged(nameof(IsLocationSet));
+            OnPropertyChanged(nameof(IsLocationNotSet));
+        }
     }
 }
