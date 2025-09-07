@@ -9,6 +9,7 @@ namespace SampleMauiMvvmApp.ViewModels
     public partial class CustomerMapViewModel : BaseViewModel
     {
         private readonly CustomerMapService _customerMapService;
+        private readonly ReadingService _readingService;
 
         [ObservableProperty]
         private ObservableCollection<ReadingDto> customers = new();
@@ -19,10 +20,17 @@ namespace SampleMauiMvvmApp.ViewModels
         [ObservableProperty]
         decimal newLongitude;
 
-        public CustomerMapViewModel(CustomerMapService customerMapService)
+        public CustomerMapViewModel(CustomerMapService customerMapService, ReadingService readingService)
         {
             Title = "Customer Map";
             _customerMapService = customerMapService;
+            _readingService = readingService;
+        }
+
+        public Reading? GetCurrentCustomerDetails(string customerNumber)
+        {
+            var customerReadings = _readingService.GetReadingsByCustomerId(customerNumber).Result;
+            return customerReadings.FirstOrDefault();
         }
 
         [RelayCommand]

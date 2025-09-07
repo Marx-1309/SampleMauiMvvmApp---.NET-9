@@ -70,11 +70,10 @@ namespace SampleMauiMvvmApp.Services
 
                 if (reading != null)
                 {
-                    reading.ReadingNotTaken = false;
-                    reading.ReadingTaken = true;
                     reading.ReadingSync = false;
                     reading.Latitude = latitude;
                     reading.Longitude = longitude;
+                    reading.CoordinatesUpdated = true;
 
                     await dbContext.Database.UpdateAsync(reading);
 

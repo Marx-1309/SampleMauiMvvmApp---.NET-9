@@ -32,6 +32,7 @@ namespace SampleMauiMvvmApp.Models
         public bool ReadingNotTaken { get; set; }
         public bool? ReadingSync { get; set; }
         public bool? AreaUpdated { get; set; } = false;
+        public bool? CoordinatesUpdated { get; set; } = false;
 
 
         [NotMapped]
@@ -88,6 +89,8 @@ namespace SampleMauiMvvmApp.Models
                 ReadingSync = wrapper.ReadingSync,
                 AreaUpdated = wrapper.AreaUpdated,
                 Comment = wrapper.Comment,
+                Latitude = wrapper.Latitude,
+                Longitude = wrapper.Longitude
             };
         }
     }
