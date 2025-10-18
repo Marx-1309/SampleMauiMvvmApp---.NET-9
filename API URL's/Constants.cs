@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public const string HOST = ListOfUrl.WindhoekHome;
+        public const string HOST = ListOfUrl.OmaruruMun;
 
         //Month
         public const string GetMonth = HOST + "/api/Month";

@@ -289,15 +289,24 @@ namespace SampleMauiMvvmApp.ViewModels
         {
             return new string[]
             {
-                "OPUWO PROPER - TOWN", "OPUWO EXT 2 - OKATUWO", "OTUZEMBA", "KATUTURA",
-                "OURANDA", "ORUTJANDJA NORTH", "BUSINESS EXT 3", "OPUWO EXT 1 - SCHEIDERS HOUSE",
-                "OPUWO PROPER & EXT - A HOUSE", "OPUWO PROPER EXT 1 & EXT 6 - B HOUSE",
-                "OTUZEMBA EXT 1 - ONDUUNJE", "ORUTJANDJA WEST", "OTUZEMBA INFORMAL",
-                "OKATUTURA WATER", "OKATUTURA RECEIPTION", "ORUTJANDJA WATER", "OLD BUSINESS",
-                "SHACK DWELLERS", "OTUZEMBA EXT 2", "OKATUWO INFORMAL", "ETATI PROPER EXT 1 & 2",
-                "OPUWO EXT 12", "OPUWO EXT 7", "OPUWO EXT 8", "UNCLASSIFIED"
+                // Omaruru & Ozondje Areas
+                "Omaruru Town - Extension 1",
+                "Omaruru Town - Extension 2",
+                "Omaruru Town - Extension 3",
+                "Omaruru Town - Extension 4",
+                "Omaruru Town - Extension 5",
+                "Ozondje Town - Welwitchia",
+                "Ozondje Town - Herero Location",
+                "Ozondje Town - Damara Location",
+                "Ozondje Town - Sonskyn",
+                "Ozondje Town - Hakahana",
+                "Ozondje Town - Vambo Location",
+                "Erongo Park",
+                "Wildlife Estates",
+                "Unclassified"
             };
         }
+
 
         [RelayCommand]
         public async Task OnTakePhotoClicked(CancellationToken xToken)
